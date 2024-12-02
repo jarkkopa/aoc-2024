@@ -2,8 +2,7 @@ let input = "inputs/day02.txt" |> System.IO.File.ReadAllLines
 
 let reports = 
     input
-    |> Array.map (fun x -> x.Split(" "))
-    |> Array.map (Array.map int)
+    |> Array.map ((fun x -> x.Split(" ")) >> Array.map int)
 
 let isSafe (arr: int array) =
     let trends =
@@ -27,9 +26,7 @@ let allReports reports =
     |> Array.append [| reports |]
 
 reports
-|> Array.map allReports
-|> Array.map (Array.map isSafe)
-|> Array.map (Array.tryFind ((=) true))
+|> Array.map (allReports >> Array.map isSafe >> Array.tryFind ((=) true))
 |> Array.where (fun x -> x.IsSome)
 |> Array.length
 |> printfn "Part two: %A"
