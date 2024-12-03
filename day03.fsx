@@ -41,9 +41,7 @@ let ranges =
     |> Seq.distinctBy snd
 
 ranges
-|> Seq.map (fun (s, e) -> input.Substring(s, e - s))
-|> Seq.map mulRegex.Matches
-|> Seq.map instructions
+|> Seq.map ((fun (s, e) -> input.Substring(s, e - s)) >> mulRegex.Matches >> instructions)
 |> Seq.concat
 |> calcResult
 |> printfn "Part two: %A"
