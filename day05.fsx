@@ -13,8 +13,7 @@ let rules =
 let updates =
     input.[1]
     |> split "\n"
-    |> Array.map (split ",")
-    |> Array.map (Array.map int)
+    |> Array.map (split "," >> Array.map int)
 
 let pagesBefore row value =
     let splitAt = row |> Array.findIndex ((=)value)
@@ -32,12 +31,32 @@ let isValid row =
         not(before |> containsAny forbidden) && a
     )
 
-let getCenterItem items =
-    let center = (items |> Array.length) / 2
-    items.[center]
+let getCenterItem (items: int array) = items.[items.Length / 2]
 
 updates
 |> Array.filter isValid
-|> Array.map getCenterItem
-|> Array.sum
+|> Array.sumBy getCenterItem
 |> printfn "Part one: %A"
+
+let comparePages a b =
+    let aRules = rules |> Map.tryFind a 
+    let bRules = rules |> Map.tryFind b
+    let aFirst =
+        match aRules with
+        | Some r -> r |> Array.contains b
+        | _ -> false
+    let bFirst =
+        match bRules with
+        | Some r -> r |> Array.contains a 
+        | _ -> false
+    match (aFirst, bFirst) with
+    | (true, _) -> -1
+    | (_, true) -> 1
+    | _ -> 0
+
+let invalidUpdates =
+    updates
+    |> Array.filter (fun x -> not (isValid x))
+    |> Array.map (Array.sortWith comparePages)
+    |> Array.sumBy getCenterItem
+    |> printfn "Part two: %A"
